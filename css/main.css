@@ -1,0 +1,365 @@
+/* ==========================================================================
+   main.css
+   Estilos principales, variables, layout global, topbar y gestor de GDDs (Dashboard)
+   ========================================================================== */
+
+:root {
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --primary-light: #e0e7ff;
+    --secondary: #64748b;
+    --secondary-hover: #475569;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+
+    --bg-dark: #0f172a;
+    --bg-card: #1e293b;
+    --bg-card-hover: #334155;
+    --bg-app: #f8fafc;
+    --surface: #ffffff;
+    --border-color: #e2e8f0;
+    --border-dark: #334155;
+
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --text-light: #f8fafc;
+
+    --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- TOPBAR / CABECERA PRINCIPAL --- */
+.app-header {
+    background: var(--bg-dark);
+    color: var(--text-light);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-logo {
+    font-size: 1.6rem;
+}
+
+.brand-text h1 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #a5b4fc, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.brand-subtitle {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+/* Indicador de GDD Activo y Progreso */
+.header-active-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 16px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.active-gdd-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #f1f5f9;
+}
+
+.header-progress-container {
+    width: 100px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.header-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #34d399);
+    width: 0%;
+    transition: width 0.4s ease;
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+.status-draft {
+    background: rgba(245, 158, 11, 0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.status-complete {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Navegación y Acciones */
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.app-nav-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.app-nav-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.app-nav-btn.active {
+    color: #ffffff;
+    background: var(--primary);
+}
+
+/* --- MAIN CONTAINER --- */
+.app-container {
+    flex: 1;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+/* --- VISTA: DASHBOARD / MIS GDDS --- */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.dashboard-title h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.dashboard-title p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.dashboard-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.gdd-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Tarjetas de GDD */
+.gdd-card {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.gdd-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
+}
+
+.gdd-card.is-active {
+    border: 2px solid var(--primary);
+}
+
+.gdd-card.create-card {
+    border: 2px dashed var(--primary);
+    background: rgba(99, 102, 241, 0.03);
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    min-height: 220px;
+}
+
+.gdd-card.create-card:hover {
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.create-card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.card-logo-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.card-logo-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.card-studio {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.card-date {
+    font-size: 0.75rem;
+    color: var(--secondary);
+    margin-bottom: 14px;
+}
+
+.card-progress-outer {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.card-progress-inner {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 3px;
+}
+
+.card-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* --- BOTONES Y BADGES --- */
+.btn {
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-hover); }
+
+.btn-secondary { background: var(--secondary); color: #fff; }
+.btn-secondary:hover { background: var(--secondary-hover); }
+
+.btn-success { background: var(--success); color: #fff; }
+.btn-ghost { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); }
+.btn-ghost:hover { background: #f1f5f9; }
+
+.btn-danger-ghost { background: transparent; color: var(--danger); border: 1px solid #fca5a5; }
+.btn-danger-ghost:hover { background: #fef2f2; }
+
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: var(--danger-hover); }
+
+.btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+
+.badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+.badge-warning { background: #fef3c7; color: #b45309; }
+.badge-success { background: #d1fae5; color: #047857; }
+
+/* Utilidades de texto */
+.text-center { text-align: center; }
+.text-muted { color: var(--text-muted); }

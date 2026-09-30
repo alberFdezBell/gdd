@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  gdd-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gdd_web_app
+    ports:
+      - "9095:9095"
+    restart: always

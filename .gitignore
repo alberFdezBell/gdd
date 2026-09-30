@@ -1,0 +1,18 @@
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archivos de log y temporales
+*.log
+scratch/
+extracted_template.txt
+
+# Editor e IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker / Portainer local overrides
+docker-compose.override.yml

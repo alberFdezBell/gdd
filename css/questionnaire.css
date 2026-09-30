@@ -1,0 +1,318 @@
+/* ==========================================================================
+   questionnaire.css
+   Estilos del cuestionario/wizard interactivo y tablas dinámicas
+   ========================================================================== */
+
+.wizard-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+/* Sidebar de pasos del wizard */
+.wizard-sidebar {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 80px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+}
+
+.wizard-sidebar h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.step-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.step-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-main);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.step-nav-btn:hover {
+    background: #f1f5f9;
+    color: var(--primary);
+}
+
+.step-nav-btn.active {
+    background: var(--primary-light);
+    color: var(--primary-hover);
+    font-weight: 700;
+}
+
+.step-icon {
+    font-size: 1.1rem;
+}
+
+.step-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Contenido Principal del Paso */
+.wizard-content {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+}
+
+.step-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.step-header h2 {
+    font-size: 1.5rem;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.step-info-badge {
+    background: #f1f5f9;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.step-hint {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Tarjetas y Secciones */
+.card-box {
+    margin-bottom: 24px;
+}
+
+.card-box h3, .card-box h4 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    color: var(--text-main);
+}
+
+.card-box h4 {
+    font-size: 1rem;
+    margin-top: 20px;
+    color: var(--primary-hover);
+}
+
+.field-hint {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+/* Formularios */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: span 2;
+}
+
+.form-group label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text-main);
+}
+
+.form-group input, 
+.form-group textarea, 
+.form-group select {
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background: #ffffff;
+}
+
+.form-group input:focus, 
+.form-group textarea:focus, 
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* Tablas Dinámicas de Edición */
+.table-responsive {
+    overflow-x: auto;
+    margin-top: 10px;
+}
+
+.dynamic-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.dynamic-table th {
+    background: #f8fafc;
+    color: var(--text-main);
+    font-weight: 600;
+    text-align: left;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+}
+
+.dynamic-table td {
+    padding: 6px 8px;
+    border: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+.dynamic-table td input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.dynamic-table td input:hover {
+    border-color: var(--border-color);
+}
+
+.dynamic-table td input:focus {
+    border-color: var(--primary);
+    background: #fff;
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.btn-danger-icon:hover {
+    background: #fee2e2;
+}
+
+/* Zona de Carga de Logo */
+.logo-upload-zone {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    text-align: center;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logo-upload-zone:hover, .logo-upload-zone.drag-over {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.drop-icon {
+    font-size: 2.2rem;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.logo-preview-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-preview-img {
+    max-height: 140px;
+    max-width: 250px;
+    object-fit: contain;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 6px;
+    background: #ffffff;
+}
+
+/* Botones del pie de wizard */
+.step-footer-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Checklist de Anexos */
+.checklist-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.checklist-item input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+}

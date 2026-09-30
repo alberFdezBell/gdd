@@ -1,0 +1,125 @@
+/* ==========================================================================
+   print.css
+   Reglas avanzadas de impresión y exportación a PDF profesional
+   ========================================================================== */
+
+@media print {
+    /* Ocultar elementos de interfaz web */
+    .app-header, 
+    .preview-toolbar, 
+    .wizard-sidebar, 
+    .step-footer-actions, 
+    .dashboard-header, 
+    .dashboard-actions, 
+    #view-dashboard, 
+    #view-questionnaire,
+    .btn, 
+    button {
+        display: none !important;
+    }
+
+    /* Resetear fondos y contenedores */
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 10pt !important;
+    }
+
+    .app-container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    #view-preview {
+        display: block !important;
+    }
+
+    .gdd-document-render {
+        background: transparent !important;
+        padding: 0 !important;
+    }
+
+    .gdd-page-container {
+        width: 100% !important;
+        min-height: auto !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    /* Configuración de Página A4 */
+    @page {
+        size: A4 portrait;
+        margin: 15mm 15mm 15mm 15mm;
+    }
+
+    /* Evitar cortes feos de texto entre páginas */
+    .gdd-section-block,
+    .doc-field,
+    .print-table-wrapper,
+    .cover-metadata-grid,
+    .cover-confidentiality-box,
+    .info-callout-box,
+    .doc-table tr {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+    /* Forzar salto de página tras la portada */
+    .gdd-cover-page {
+        min-height: auto !important;
+        page-break-after: always !important;
+        break-after: page !important;
+    }
+
+    .page-break {
+        page-break-after: always !important;
+        break-after: page !important;
+    }
+
+    /* Cabecera superior derecha fija en páginas impresas */
+    .print-page-header {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        border-bottom: 1px solid #718096;
+        padding-bottom: 4px;
+        margin-bottom: 15px;
+    }
+
+    .header-game-title {
+        font-size: 8.5pt !important;
+        font-weight: 700 !important;
+        color: #2d3748 !important;
+    }
+
+    /* Titulares de sección */
+    h1, h2, h3, h4 {
+        break-after: avoid !important;
+        page-break-after: avoid !important;
+    }
+
+    .gdd-section-block h2 {
+        color: #1a365d !important;
+        border-bottom-color: #2b6cb0 !important;
+    }
+
+    /* Tablas en impresión */
+    .doc-table th {
+        background-color: #edf2f7 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .doc-field-value {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        background-color: #f7fafc !important;
+    }
+}

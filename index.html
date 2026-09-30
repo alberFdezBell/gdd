@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GDD Studio Professional - Gestor y Cuestionario de GDDs</title>
+
+    <!-- Hojas de Estilo Separadas y Ordenadas -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/questionnaire.css">
+    <link rel="stylesheet" href="css/preview.css">
+    <link rel="stylesheet" href="css/print.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- CABECERA PRINCIPAL (TOPBAR) -->
+    <header class="app-header">
+        <div class="header-brand">
+            <span class="brand-logo">🎮</span>
+            <div class="brand-text">
+                <h1>GDD Studio Professional</h1>
+                <span class="brand-subtitle">Gestión y Redacción de Game Design Documents</span>
+            </div>
+        </div>
+
+        <!-- Indicador de Estado del GDD Activo -->
+        <div class="header-active-info">
+            <span class="active-gdd-title" id="header-active-title">Mi Proyecto</span>
+            <div class="header-progress-container" title="Porcentaje de completitud del GDD">
+                <div class="header-progress-fill" id="header-progress-bar"></div>
+            </div>
+            <span class="status-badge status-draft" id="header-completion-badge">📝 Borrador (0%)</span>
+        </div>
+
+        <!-- Navegación de Vistas y Acciones -->
+        <nav class="header-nav">
+            <button class="app-nav-btn active" id="nav-dashboard" onclick="AppModule.switchView('dashboard')">
+                <span>📁</span> Mis GDDs
+            </button>
+            <button class="app-nav-btn" id="nav-questionnaire" onclick="AppModule.switchView('questionnaire')">
+                <span>✏️</span> Cuestionario
+            </button>
+            <button class="app-nav-btn" id="nav-preview" onclick="AppModule.switchView('preview')">
+                <span>👁️</span> Documento Vivo
+            </button>
+            <button class="btn btn-sm btn-ghost" onclick="AppModule.exportActiveGddJson()" title="Descargar copia de seguridad en JSON">
+                💾 Guardar JSON
+            </button>
+            <button class="btn btn-sm btn-success" onclick="AppModule.exportActivePdf()" title="Exportar o imprimir a PDF profesional">
+                🖨️ Exportar PDF
+            </button>
+        </nav>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="app-container">
+
+        <!-- VISTA 1: DASHBOARD / MIS GDDS -->
+        <section id="view-dashboard" class="view-section" style="display: block;">
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <h2>Panel de Control de GDDs</h2>
+                    <p>Gestiona, crea, edita o exporta tus documentos de diseño de videojuegos.</p>
+                </div>
+                <div class="dashboard-actions">
+                    <input type="file" id="import-json-input" accept=".json" style="display: none;">
+                    <button class="btn btn-ghost" onclick="AppModule.triggerImportJson()">
+                        📥 Importar GDD (JSON)
+                    </button>
+                    <button class="btn btn-primary" onclick="AppModule.createNewGdd()">
+                        ➕ Nuevo GDD
+                    </button>
+                </div>
+            </div>
+
+            <!-- Grilla de Tarjetas de GDDs -->
+            <div class="gdd-cards-grid" id="gdd-cards-grid">
+                <!-- Se renderiza dinámicamente con JavaScript -->
+            </div>
+        </section>
+
+        <!-- VISTA 2: CUESTIONARIO / WIZARD -->
+        <section id="view-questionnaire" class="view-section wizard-layout" style="display: none;">
+            <!-- Navegación lateral de pasos -->
+            <aside class="wizard-sidebar">
+                <h3>Apartados del GDD</h3>
+                <div class="step-nav-list" id="wizard-step-nav">
+                    <!-- Se renderiza dinámicamente -->
+                </div>
+            </aside>
+
+            <!-- Área de formulario del paso actual -->
+            <article class="wizard-content" id="wizard-step-content">
+                <!-- Se renderiza dinámicamente -->
+            </article>
+        </section>
+
+        <!-- VISTA 3: VISTA PREVIA DEL DOCUMENTO Y EXPORTACIÓN PDF -->
+        <section id="view-preview" class="view-section" style="display: none;">
+            <div class="preview-toolbar">
+                <div>
+                    <h2>👁️ Documento Vivo de Diseño</h2>
+                    <p class="text-muted">Vista preliminar profesional del GDD tal como se imprimirá en PDF.</p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-secondary" onclick="AppModule.switchView('questionnaire')">
+                        ✏️ Seguir Editando
+                    </button>
+                    <button class="btn btn-success" onclick="AppModule.exportActivePdf()">
+                        🖨️ Descargar / Imprimir en PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- RENDERIZADO DEL DOCUMENTO A4 -->
+            <div class="gdd-document-render" id="gdd-document-render">
+                <!-- Se genera dinámicamente en preview.js -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- SCRIPTS EN ORDEN CORRECTO DE DEPENDENCIA -->
+    <script src="js/template-data.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/questionnaire.js"></script>
+    <script src="js/preview.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
