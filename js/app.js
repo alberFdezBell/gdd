@@ -1,6 +1,6 @@
 /**
  * app.js
- * Controlador principal de la aplicación GDD Studio Professional
+ * Controlador principal simplificado para GDD Studio Professional con Modales Personalizados
  */
 
 const AppModule = {
@@ -8,37 +8,25 @@ const AppModule = {
     activeGdd: null,
 
     init() {
-        // Cargar el GDD activo o crear uno inicial si la lista está vacía
         const list = StorageService.getAllGdds();
         const activeId = StorageService.getActiveGddId();
 
-        if (list.length === 0) {
-            // Crear el primer GDD de ejemplo
-            const defaultGdd = createEmptyGdd("Mi Primer Videojuego", "Mi Estudio Studio");
-            StorageService.saveGdd(defaultGdd);
-            this.activeGdd = defaultGdd;
-        } else {
+        if (list.length > 0) {
             this.activeGdd = list.find(item => item.id === activeId) || list[0];
             StorageService.setActiveGddId(this.activeGdd.id);
+            QuestionnaireModule.init(this.activeGdd, (updatedData) => this.onDataChanged(updatedData));
+            PreviewModule.render(this.activeGdd);
         }
 
         this.bindEvents();
         this.renderDashboard();
         this.updateHeaderState();
-
-        // Iniciar el cuestionario y el renderizado
-        QuestionnaireModule.init(this.activeGdd, (updatedData) => {
-            this.onDataChanged(updatedData);
-        });
-
-        PreviewModule.render(this.activeGdd);
         
-        // Vista por defecto
+        // Vista inicial por defecto
         this.switchView('dashboard');
     },
 
     bindEvents() {
-        // Evento de importación JSON
         const importInput = document.getElementById('import-json-input');
         if (importInput) {
             importInput.addEventListener('change', (e) => {
@@ -47,32 +35,32 @@ const AppModule = {
                         .then(importedGdd => {
                             StorageService.saveGdd(importedGdd);
                             this.activeGdd = importedGdd;
-                            QuestionnaireModule.setGdd(this.activeGdd);
+                            QuestionnaireModule.init(this.activeGdd, (updatedData) => this.onDataChanged(updatedData));
                             PreviewModule.render(this.activeGdd);
                             this.renderDashboard();
                             this.switchView('questionnaire');
-                            alert('¡GDD importado con éxito!');
+                            ModalModule.alert("Importación Exitosa", `Se ha importado el GDD "${importedGdd.cover.title}" con éxito.`);
                         })
-                        .catch(err => {
-                            alert('Error al importar el archivo JSON: ' + err.message);
-                        });
+                        .catch(err => ModalModule.alert("Error de Importación", 'No se pudo importar el archivo JSON: ' + err.message));
                 }
             });
         }
     },
 
     switchView(viewName) {
+        if (!this.activeGdd && (viewName === 'questionnaire' || viewName === 'preview')) {
+            this.createNewGdd();
+            return;
+        }
+
         this.currentView = viewName;
 
-        // Ocultar todas las vistas
         document.getElementById('view-dashboard').style.display = 'none';
         document.getElementById('view-questionnaire').style.display = 'none';
         document.getElementById('view-preview').style.display = 'none';
 
-        // Desactivar estado activo en nav
         document.querySelectorAll('.app-nav-btn').forEach(btn => btn.classList.remove('active'));
 
-        // Mostrar la vista seleccionada
         if (viewName === 'dashboard') {
             document.getElementById('view-dashboard').style.display = 'block';
             document.getElementById('nav-dashboard').classList.add('active');
@@ -96,38 +84,49 @@ const AppModule = {
         StorageService.saveGdd(this.activeGdd);
         this.updateHeaderState();
         
-        // Si la vista previa está visible, actualizarla dinámicamente
         if (this.currentView === 'preview') {
             PreviewModule.render(this.activeGdd);
         }
     },
 
     updateHeaderState() {
-        if (!this.activeGdd) return;
-
         const titleEl = document.getElementById('header-active-title');
         const badgeEl = document.getElementById('header-completion-badge');
         const progressBarEl = document.getElementById('header-progress-bar');
+        const gddActionsEl = document.getElementById('gdd-nav-actions');
+
+        // Mostrar el grupo de acciones sólo cuando hay un GDD activo
+        // y no estamos en el dashboard
+        if (gddActionsEl) {
+            const showActions = !!(this.activeGdd && this.currentView !== 'dashboard');
+            gddActionsEl.style.display = showActions ? 'flex' : 'none';
+        }
+
+        if (!this.activeGdd) {
+            if (titleEl) titleEl.textContent = "Sin GDD Seleccionado";
+            if (badgeEl) {
+                badgeEl.className = 'status-badge status-draft';
+                badgeEl.textContent = 'Sin documento';
+            }
+            if (progressBarEl) progressBarEl.style.width = "0%";
+            return;
+        }
 
         const completion = calculateGddCompletion(this.activeGdd);
 
-        if (titleEl) {
-            titleEl.textContent = this.activeGdd.cover.title || 'Sin Título';
-        }
+        if (titleEl) titleEl.textContent = this.activeGdd.cover.title || 'Sin Título';
 
         if (badgeEl) {
             if (completion === 100) {
                 badgeEl.className = 'status-badge status-complete';
-                badgeEl.textContent = '✅ Completado (100%)';
+                badgeEl.textContent = 'Completado (100%)';
             } else {
                 badgeEl.className = 'status-badge status-draft';
-                badgeEl.textContent = `📝 Borrador (${completion}% completado)`;
+                badgeEl.textContent = `Borrador (${completion}%)`;
             }
         }
 
-        if (progressBarEl) {
-            progressBarEl.style.width = `${completion}%`;
-        }
+        if (progressBarEl) progressBarEl.style.width = `${completion}%`;
     },
 
     renderDashboard() {
@@ -136,12 +135,25 @@ const AppModule = {
 
         const list = StorageService.getAllGdds();
 
+        if (list.length === 0) {
+            gridContainer.innerHTML = `
+                <div class="empty-dashboard-card" onclick="AppModule.createNewGdd()">
+                    <i class="fa-solid fa-file-circle-plus empty-card-icon icon-gray"></i>
+                    <h3>Crear tu primer GDD</h3>
+                    <p>No tienes ningún documento creado. Haz clic aquí para comenzar una plantilla limpia desde cero.</p>
+                    <button class="btn btn-primary" style="margin-top: 14px;">
+                        <i class="fa-solid fa-plus"></i> Crear Nuevo GDD
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
         let html = `
-            <!-- Card para Crear Nuevo GDD -->
             <div class="gdd-card create-card" onclick="AppModule.createNewGdd()">
-                <div class="create-card-icon">➕</div>
+                <i class="fa-solid fa-plus create-card-icon icon-gray"></i>
                 <h3>Crear Nuevo GDD</h3>
-                <p>Comienza una plantilla profesional desde cero</p>
+                <p>Comienza una plantilla limpia desde cero</p>
             </div>
         `;
 
@@ -149,14 +161,14 @@ const AppModule = {
             const completion = calculateGddCompletion(gdd);
             const isCurrentActive = this.activeGdd && this.activeGdd.id === gdd.id;
             const updatedDate = new Date(gdd.updatedAt).toLocaleDateString('es-ES', {
-                day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                day: '2-digit', month: '2-digit', year: 'numeric'
             });
 
             html += `
                 <div class="gdd-card ${isCurrentActive ? 'is-active' : ''}">
                     <div class="card-top">
                         <div class="card-logo-thumb">
-                            ${gdd.cover.logo ? `<img src="${gdd.cover.logo}" alt="Logo">` : '🎮'}
+                            ${gdd.cover.logo ? `<img src="${gdd.cover.logo}" alt="Logo">` : '<i class="fa-solid fa-gamepad icon-gray"></i>'}
                         </div>
                         <div class="card-status">
                             ${completion === 100 ? '<span class="badge badge-success">Completado</span>' : `<span class="badge badge-warning">${completion}% Relleno</span>`}
@@ -164,19 +176,19 @@ const AppModule = {
                     </div>
 
                     <h3 class="card-title">${this.escapeHtml(gdd.cover.title || 'Sin título')}</h3>
-                    <p class="card-studio">🏢 ${this.escapeHtml(gdd.cover.studio || 'Sin estudio')}</p>
-                    <p class="card-date">🕒 Modificado: ${updatedDate}</p>
+                    <p class="card-studio"><i class="fa-solid fa-building icon-gray"></i> ${this.escapeHtml(gdd.cover.studio || 'Sin estudio')}</p>
+                    <p class="card-date"><i class="fa-solid fa-clock icon-gray"></i> ${updatedDate}</p>
 
                     <div class="card-progress-outer">
                         <div class="card-progress-inner" style="width: ${completion}%"></div>
                     </div>
 
                     <div class="card-actions">
-                        <button class="btn btn-sm btn-primary" onclick="AppModule.selectGdd('${gdd.id}', 'questionnaire')">✏️ Editar</button>
-                        <button class="btn btn-sm btn-ghost" onclick="AppModule.selectGdd('${gdd.id}', 'preview')">👁️ Ver</button>
-                        <button class="btn btn-sm btn-ghost" title="Duplicar" onclick="AppModule.duplicateGdd('${gdd.id}')">📋</button>
-                        <button class="btn btn-sm btn-ghost" title="Exportar JSON" onclick="AppModule.exportGddJson('${gdd.id}')">💾</button>
-                        <button class="btn btn-sm btn-danger-ghost" title="Eliminar" onclick="AppModule.deleteGdd('${gdd.id}')">🗑️</button>
+                        <button class="btn btn-sm btn-primary" onclick="AppModule.selectGdd('${gdd.id}', 'questionnaire')"><i class="fa-solid fa-pen"></i> Editar</button>
+                        <button class="btn btn-sm btn-ghost" onclick="AppModule.selectGdd('${gdd.id}', 'preview')"><i class="fa-solid fa-eye icon-gray"></i> Ver</button>
+                        <button class="btn btn-sm btn-ghost" title="Duplicar" onclick="AppModule.duplicateGdd('${gdd.id}')"><i class="fa-solid fa-copy icon-gray"></i></button>
+                        <button class="btn btn-sm btn-ghost" title="Exportar JSON" onclick="AppModule.exportGddJson('${gdd.id}')"><i class="fa-solid fa-floppy-disk icon-gray"></i></button>
+                        <button class="btn btn-sm btn-danger-ghost" title="Eliminar" onclick="AppModule.deleteGdd('${gdd.id}')"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             `;
@@ -185,15 +197,14 @@ const AppModule = {
         gridContainer.innerHTML = html;
     },
 
-    createNewGdd() {
-        const name = prompt("Escribe el nombre de tu nuevo videojuego:", "Nuevo Proyecto");
-        if (name === null) return; // Cancelado
-        const studio = prompt("Escribe el nombre de tu estudio o equipo:", "Mi Estudio");
+    async createNewGdd() {
+        const promptData = await ModalModule.createGddPrompt();
+        if (!promptData) return;
         
-        const newGdd = createEmptyGdd(name || "Nuevo Proyecto", studio || "Mi Estudio");
+        const newGdd = createEmptyGdd(promptData.title, promptData.studio);
         StorageService.saveGdd(newGdd);
         this.activeGdd = newGdd;
-        QuestionnaireModule.setGdd(this.activeGdd);
+        QuestionnaireModule.init(this.activeGdd, (updatedData) => this.onDataChanged(updatedData));
         PreviewModule.render(this.activeGdd);
         this.switchView('questionnaire');
     },
@@ -203,7 +214,7 @@ const AppModule = {
         if (gdd) {
             this.activeGdd = gdd;
             StorageService.setActiveGddId(id);
-            QuestionnaireModule.setGdd(this.activeGdd);
+            QuestionnaireModule.init(this.activeGdd, (updatedData) => this.onDataChanged(updatedData));
             PreviewModule.render(this.activeGdd);
             this.switchView(viewToSwitch);
         }
@@ -213,7 +224,7 @@ const AppModule = {
         const duplicated = StorageService.duplicateGdd(id);
         if (duplicated) {
             this.renderDashboard();
-            alert(`Se ha creado una copia: "${duplicated.cover.title}"`);
+            ModalModule.alert("Copia Creada", `Se ha duplicado el documento: "${duplicated.cover.title}".`);
         }
     },
 
@@ -230,18 +241,27 @@ const AppModule = {
         }
     },
 
-    deleteGdd(id) {
+    async deleteGdd(id) {
         const gdd = StorageService.getGddById(id);
         if (!gdd) return;
-        if (confirm(`¿Estás seguro de que deseas eliminar el GDD "${gdd.cover.title}"? Esta acción no se puede deshacer.`)) {
+        
+        const confirmed = await ModalModule.confirm(
+            "Eliminar GDD",
+            `¿Estás seguro de que deseas eliminar permanentemente el GDD "${gdd.cover.title}"? Esta acción no se puede deshacer.`,
+            "Eliminar Documento",
+            true
+        );
+
+        if (confirmed) {
             StorageService.deleteGdd(id);
             const remaining = StorageService.getAllGdds();
             if (remaining.length > 0) {
                 this.selectGdd(remaining[0].id, 'dashboard');
             } else {
-                this.createNewGdd();
+                this.activeGdd = null;
+                this.renderDashboard();
+                this.updateHeaderState();
             }
-            this.renderDashboard();
         }
     },
 
@@ -251,6 +271,7 @@ const AppModule = {
     },
 
     exportActivePdf() {
+        if (!this.activeGdd) return;
         PreviewModule.render(this.activeGdd);
         PreviewModule.exportPdf();
     },
@@ -261,7 +282,6 @@ const AppModule = {
     }
 };
 
-// Iniciar aplicación al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
     AppModule.init();
 });

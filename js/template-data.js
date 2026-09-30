@@ -1,30 +1,24 @@
 /**
  * template-data.js
- * Schema predeterminado y utilidades para el GDD basado en Plantilla_GDD_Profesional.docx
+ * Esquema limpio y utilidades para el GDD basado en Plantilla_GDD_Profesional.docx
  */
 
-function createEmptyGdd(title = "Nuevo Videojuego", studio = "Mi Estudio / Equipo") {
+function createEmptyGdd(title = "", studio = "") {
     return {
         id: "gdd_" + Date.now(),
         updatedAt: new Date().toISOString(),
         
         // Portada y Datos Generales
         cover: {
-            title: title,
-            studio: studio,
-            logo: "", // Base64 o URL de la imagen del estudio
+            title: title || "Nuevo Videojuego",
+            studio: studio || "Mi Estudio",
+            logo: "", // Base64 o URL del logo del estudio
             version: "0.1",
             date: new Date().toLocaleDateString('es-ES'),
             author: "",
             notes: "Este documento contiene información confidencial sobre el diseño del videojuego.",
-            version_control: [
-                { version: "0.1", date: new Date().toLocaleDateString('es-ES'), author: "Diseñador Principal", changes: "Creación inicial del GDD" }
-            ],
-            doc_status: [
-                { area: "Diseño General", responsible: "Lead Designer", status: "En progreso", last_review: new Date().toLocaleDateString('es-ES') },
-                { area: "Arte", responsible: "Art Director", status: "Pendiente", last_review: "-" },
-                { area: "Programación", responsible: "Lead Tech", status: "Pendiente", last_review: "-" }
-            ]
+            version_control: [],
+            doc_status: []
         },
 
         // 1. Resumen ejecutivo
@@ -51,27 +45,18 @@ function createEmptyGdd(title = "Nuevo Videojuego", studio = "Mi Estudio / Equip
         section2: {
             fantasy_main: "",
             emotions_target: "",
-            objectives: [
-                { type: "Principal", objective: "Completar la historia principal", communication: "Marcador en el HUD y diario de misiones" }
-            ],
+            objectives: [],
             core_loop_main: "",
             core_loop_session: "",
             core_loop_progression: "",
-            success_fail_conditions: [
-                { situation: "Derrota en combate", condition: "Salud del jugador llega a 0", consequence: "Reiniciar desde el último checkpoint", feedback: "Pantalla fundido a negro y sonido de latido" }
-            ]
+            success_fail_conditions: []
         },
 
         // 3. Gameplay y mecánicas
         section3: {
-            controls: [
-                { action: "Moverse", keyboard: "WASD", gamepad: "Stick Izquierdo", mobile: "Joystick virtual", notes: "-" },
-                { action: "Interactuar", keyboard: "E", gamepad: "Botón A / Cross", mobile: "Botón Táctil", notes: "-" }
-            ],
+            controls: [],
             movement_system: "",
-            main_mechanics: [
-                { mechanic: "Salto", description: "Capacidad de elevación vertical", input: "Espacio / Botón A", rules: "Máximo 1 salto en aire", feedback: "Partículas de polvo en pies", priority: "Alta" }
-            ],
+            main_mechanics: [],
             secondary_mechanics: [],
             interaction_system: "",
             combat: {
@@ -95,19 +80,15 @@ function createEmptyGdd(title = "Nuevo Videojuego", studio = "Mi Estudio / Equip
             rewards: "",
             saves: "",
             difficulty_desc: "",
-            balance_variables: [
-                { variable: "Salud Base Jugador", initial: "100", min: "50", max: "500", notes: "Aumenta con equipamiento" }
-            ]
+            balance_variables: []
         },
 
         // 5. Mundo, niveles y estructura
         section5: {
             world_structure: "",
-            level_design: [
-                { level: "Nivel 1 - Tutorial", objective: "Aprender los controles básicos", main_mechanic: "Movimiento y Salto", threats: "Obstáculos simples", reward: "Llave de acceso", duration: "10 min" }
-            ],
+            level_design: [],
             level_template: {
-                id: "LEVEL_01",
+                id: "",
                 objective: "",
                 start: "",
                 end: "",
@@ -124,12 +105,8 @@ function createEmptyGdd(title = "Nuevo Videojuego", studio = "Mi Estudio / Equip
         // 6. Narrativa y personajes
         section6: {
             synopsis: "",
-            narrative_structure: [
-                { act: "Acto I", situation: "Introducción", dramatic_obj: "Establecer la motivación", twist: "Descubrimiento de la amenaza", gameplay: "Tutorial y exploración inicial" }
-            ],
-            characters: [
-                { character: "Protagonista", role: "Héroe", objective: "Restaurar el equilibrio", personality: "Determinado", arc: "De aprendiz a maestro", gameplay: "Control directo del jugador" }
-            ],
+            narrative_structure: [],
+            characters: [],
             lore_rules: "",
             lore_chronology: "",
             lore_known_info: "",
@@ -138,13 +115,9 @@ function createEmptyGdd(title = "Nuevo Videojuego", studio = "Mi Estudio / Equip
 
         // 7. Entidades, enemigos y NPC
         section7: {
-            enemies: [
-                { name: "Enemigo Básico", role: "Patrulla", behavior: "Ataca al detectar al jugador", attacks: "Golpe de melé", weakness: "Ataques por la espalda", key_stats: "HP: 50 | Daño: 10", drop: "Monedas" }
-            ],
+            enemies: [],
             ai_architecture: "",
-            ai_states: [
-                { state: "Patrulla", entry: "Jugador no detectado", behavior: "Recorrer waypoints", exit: "Línea de visión con jugador" }
-            ],
+            ai_states: [],
             npcs: [],
             bosses: []
         },
@@ -160,14 +133,10 @@ function createEmptyGdd(title = "Nuevo Videojuego", studio = "Mi Estudio / Equip
         // 9. Interfaz, UX y accesibilidad
         section9: {
             screen_flow: "",
-            hud_elements: [
-                { element: "Barra de Salud", info: "HP Actual / Máximo", position: "Superior Izquierda", trigger: "Siempre visible", priority: "Alta" }
-            ],
+            hud_elements: [],
             menus: [],
             feedback_events: [],
-            accessibility: [
-                { need: "Subtítulos", solution: "Texto en pantalla configurable con fondo semitransparente", status: "Planeado" }
-            ]
+            accessibility: []
         },
 
         // 10. Dirección artística
@@ -301,34 +270,15 @@ function calculateGddCompletion(gdd) {
     // Sección 2
     check(gdd.section2.fantasy_main);
     check(gdd.section2.core_loop_main);
-    check(gdd.section2.objectives);
 
     // Sección 3
     check(gdd.section3.movement_system);
-    check(gdd.section3.main_mechanics);
-    check(gdd.section3.controls);
-
-    // Sección 4
-    check(gdd.section4.progression);
-    check(gdd.section4.saves);
-
-    // Sección 5
-    check(gdd.section5.world_structure);
-    check(gdd.section5.level_design);
 
     // Sección 6
     check(gdd.section6.synopsis);
-    check(gdd.section6.characters);
-
-    // Sección 7
-    check(gdd.section7.enemies);
-    check(gdd.section7.ai_architecture);
 
     // Sección 10
     check(gdd.section10.visual_vision);
-
-    // Sección 12
-    check(gdd.section12.technical_table.engine);
 
     if (totalFields === 0) return 0;
     return Math.round((filledFields / totalFields) * 100);

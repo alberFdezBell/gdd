@@ -1,6 +1,6 @@
 /**
  * preview.js
- * Genera la vista de documento profesional y la exportación a PDF (vía ventana de impresión).
+ * Genera la vista de documento profesional y la exportación/descarga directa a PDF.
  */
 
 const PreviewModule = {
@@ -13,7 +13,7 @@ const PreviewModule = {
         const studio = cover.studio || 'Estudio / Equipo';
         const version = cover.version || '0.1';
         const date = cover.date || new Date().toLocaleDateString('es-ES');
-        const author = cover.author || 'Adrián Bautista Ramos';
+        const author = cover.author || 'No asignado';
         const logo = cover.logo;
         const notes = cover.notes || 'Documento Confidencial';
 
@@ -43,7 +43,7 @@ const PreviewModule = {
                         </div>
                         <div class="meta-item full-width">
                             <span class="meta-label">RESPONSABLE</span>
-                            <span class="meta-value">${this.escape(author || 'No asignado')}</span>
+                            <span class="meta-value">${this.escape(author)}</span>
                         </div>
                     </div>
 
@@ -57,7 +57,7 @@ const PreviewModule = {
                                 </div>
                             ` : `
                                 <div class="no-logo-placeholder">
-                                    <span class="placeholder-icon">🏢</span>
+                                    <i class="fa-solid fa-building placeholder-icon icon-gray"></i>
                                     <span>[Imagen / Logo del Estudio no definida]</span>
                                 </div>
                             `}
@@ -89,7 +89,7 @@ const PreviewModule = {
 
                 <!-- GUÍA RÁPIDA DE CONVENCIÓN -->
                 <div class="gdd-section-block info-callout-box">
-                    <h4>💡 Cómo usar este GDD</h4>
+                    <h4><i class="fa-solid fa-circle-info icon-gray"></i> Cómo usar este GDD</h4>
                     <p>El GDD es un documento vivo. No hace falta completar todo desde el primer día: rellena primero la visión, el core loop y las mecánicas principales; amplía el resto conforme el prototipo avance.</p>
                 </div>
 
@@ -725,7 +725,7 @@ const PreviewModule = {
                     <div class="doc-checklist-render">
                         ${(gdd.section17?.checklist || []).map(item => `
                             <div class="doc-check-line ${item.checked ? 'is-checked' : ''}">
-                                <span class="check-box-icon">${item.checked ? '☑️' : '☐'}</span>
+                                <span class="check-box-icon">${item.checked ? '<i class="fa-solid fa-square-check icon-gray"></i>' : '<i class="fa-regular fa-square icon-gray"></i>'}</span>
                                 <span>${this.escape(item.text)}</span>
                             </div>
                         `).join('')}
@@ -738,7 +738,6 @@ const PreviewModule = {
     },
 
     renderTable(headers, rows) {
-        // Filtrar filas completamente vacías
         const validRows = rows.filter(row => row && row.some(cell => cell && cell.toString().trim() !== ''));
 
         if (validRows.length === 0) {
@@ -782,7 +781,39 @@ const PreviewModule = {
             .replace(/'/g, '&#039;');
     },
 
-    exportPdf() {
-        window.print();
+    exportPdf(gdd) {
+        const targetGdd = gdd || (typeof AppModule !== 'undefined' ? AppModule.activeGdd : null);
+        if (!targetGdd) return;
+
+        // Renderizar el documento completo antes de compilar el PDF
+        this.render(targetGdd);
+
+        const rawTitle = (targetGdd.cover.title || 'gdd').toLowerCase().replace(/[^a-z0-9]/gi, '_');
+        const filename = `${rawTitle}_GDD.pdf`;
+        const element = document.querySelector('.gdd-page-container') || document.getElementById('gdd-document-render');
+
+        if (!element) return;
+
+        if (typeof html2pdf !== 'undefined') {
+            const opt = {
+                margin: [10, 10, 10, 10], // Margen en mm
+                filename: filename,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            };
+
+            ModalModule.alert("Generando PDF", "Iniciando descarga del archivo PDF...");
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                ModalModule.close();
+            }).catch(() => {
+                ModalModule.close();
+                window.print();
+            });
+        } else {
+            window.print();
+        }
     }
 };

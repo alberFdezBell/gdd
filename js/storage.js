@@ -1,15 +1,12 @@
 /**
  * storage.js
- * Gestión de almacenamiento local (localStorage) e importación/exportación de archivos JSON
+ * Gestión de almacenamiento local (localStorage) e importación/exportación JSON
  */
 
 const STORAGE_KEY = 'gdd_studio_collection_v1';
 const ACTIVE_GDD_KEY = 'gdd_studio_active_id';
 
 const StorageService = {
-    /**
-     * Obtiene la lista completa de GDDs guardados
-     */
     getAllGdds() {
         try {
             const data = localStorage.getItem(STORAGE_KEY);
@@ -20,29 +17,22 @@ const StorageService = {
         }
     },
 
-    /**
-     * Guarda la lista completa de GDDs
-     */
     saveAllGdds(gdds) {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(gdds));
         } catch (e) {
             console.error('Error al guardar GDDs en localStorage', e);
-            alert('Atención: No se pudo guardar el GDD en el navegador. Es posible que el almacenamiento esté lleno (por ejemplo si la imagen cargada es muy grande).');
+            if (typeof ModalModule !== 'undefined') {
+                ModalModule.alert('Almacenamiento Lleno', 'No se pudo guardar el GDD en el navegador. Si has cargado imágenes muy pesadas, intenta reducirlas de tamaño.');
+            }
         }
     },
 
-    /**
-     * Obtiene un GDD por su ID
-     */
     getGddById(id) {
         const list = this.getAllGdds();
         return list.find(item => item.id === id) || null;
     },
 
-    /**
-     * Guarda o actualiza un GDD individual
-     */
     saveGdd(gdd) {
         if (!gdd || !gdd.id) return;
         gdd.updatedAt = new Date().toISOString();
@@ -57,9 +47,6 @@ const StorageService = {
         this.setActiveGddId(gdd.id);
     },
 
-    /**
-     * Elimina un GDD por su ID
-     */
     deleteGdd(id) {
         let list = this.getAllGdds();
         list = list.filter(item => item.id !== id);
@@ -70,9 +57,6 @@ const StorageService = {
         }
     },
 
-    /**
-     * Duplica un GDD
-     */
     duplicateGdd(id) {
         const original = this.getGddById(id);
         if (!original) return null;
@@ -84,16 +68,10 @@ const StorageService = {
         return copy;
     },
 
-    /**
-     * Obtiene el ID del GDD activo
-     */
     getActiveGddId() {
         return localStorage.getItem(ACTIVE_GDD_KEY) || null;
     },
 
-    /**
-     * Establece el ID del GDD activo
-     */
     setActiveGddId(id) {
         if (id) {
             localStorage.setItem(ACTIVE_GDD_KEY, id);
@@ -102,9 +80,6 @@ const StorageService = {
         }
     },
 
-    /**
-     * Exporta un GDD como archivo JSON descargable
-     */
     exportToJson(gdd) {
         if (!gdd) return;
         const filename = (gdd.cover.title || 'gdd').toLowerCase().replace(/[^a-z0-9]/gi, '_') + '.json';
@@ -121,9 +96,6 @@ const StorageService = {
         URL.revokeObjectURL(url);
     },
 
-    /**
-     * Lee un archivo JSON seleccionado por el usuario y retorna el objeto GDD
-     */
     importFromJsonFile(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -131,9 +103,8 @@ const StorageService = {
                 try {
                     const parsed = JSON.parse(e.target.result);
                     if (!parsed.cover || !parsed.cover.title) {
-                        throw new Error('El archivo JSON no tiene la estructura de un GDD válido.');
+                        throw new Error('El archivo JSON no contiene la estructura de un GDD válido.');
                     }
-                    // Garantizar un id único al importar
                     parsed.id = "gdd_" + Date.now();
                     resolve(parsed);
                 } catch (err) {
